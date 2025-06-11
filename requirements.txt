@@ -1,0 +1,17 @@
+# Core dependencies
+termcolor>=1.1
+Pillow>=6.0
+yacs>=0.1.6
+tabulate
+cloudpickle
+matplotlib
+tqdm>4.29.0
+tensorboard
+imagesize
+# Optional utilities
+shapely
+psutil
+albumentations # optional
+opencv-python # optional
+fvcore @ git+https://github.com/facebookresearch/fvcore
+cython

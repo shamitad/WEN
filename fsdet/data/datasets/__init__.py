@@ -1,7 +1,19 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
-from .coco import load_coco_json
-from .lvis import load_lvis_json, register_lvis_instances
-from .register_coco import register_coco_instances
+try:
+    from .coco import load_coco_json
+except Exception:  # pragma: no cover - coco dataset is optional
+    load_coco_json = None
+
+try:
+    from .lvis import load_lvis_json, register_lvis_instances
+except Exception:  # pragma: no cover - lvis dataset is optional
+    pass
+
+try:
+    from .register_coco import register_coco_instances
+except Exception:  # pragma: no cover - coco dataset is optional
+    pass
+
 from . import builtin  # ensure the builtin datasets are registered
 
 

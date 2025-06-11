@@ -10,11 +10,14 @@ FsDet is built on [Detectron2](https://github.com/facebookresearch/detectron2). 
 **Dependencies**
 
 * Linux with Python >= 3.6
-* [PyTorch](https://pytorch.org/get-started/locally/) >= 1.3 
-* [torchvision](https://github.com/pytorch/vision/) that matches the PyTorch installation
-* Dependencies: ```pip install -r requirements.txt```
+* [PyTorch](https://pytorch.org/get-started/locally/) >= 1.3 and
+  [torchvision](https://github.com/pytorch/vision/) that matches the PyTorch installation.
+  Install PyTorch first before running the commands below.
+* Install this package and dependencies: ```pip install -e .```
+* Or install dependencies from `requirements.txt`: `pip install -r requirements.txt`
 * pycocotools: ```pip install cython; pip install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'```
-* [fvcore](https://github.com/facebookresearch/fvcore/): ```pip install 'git+https://github.com/facebookresearch/fvcore'``` 
+* [albumentations](https://github.com/albumentations-team/albumentations) (optional, for AlbumentationMapper): `pip install albumentations`
+* [fvcore](https://github.com/facebookresearch/fvcore/): ```pip install 'git+https://github.com/facebookresearch/fvcore'```
 * [OpenCV](https://pypi.org/project/opencv-python/), optional, needed by demo and visualization ```pip install opencv-python```
 * GCC >= 4.9
 
@@ -38,7 +41,8 @@ Our experiments are conducted on two datasets: PASCAL VOC and X-ray FSOD.
 
 
 - X-ray FSOD: We use the train set of X-ray FSOD for training and the test set of X-ray FSOD for evaluation. We randomly split the 20 object classes into 15 base classes and 5 novel classes, and we consider 3 random splits. The splits can be found in [fsdet/data/datasets/builtin_meta.py](fsdet/data/datasets/builtin_meta.py).
-(Note that in this repository, **the X-ray FSOD dataset is named RFS**). The default seed of X-ray FSOD that is used to report performace in research papers can be found in the folder: Xray FSOD/train/split.(Download Link: If you want to access the dataset, please sign the <a href="./Commitment.pdf">PDF</a> file and send it to cvresearcher@163.com. After receiving your request, we will rely with the download link soon.)
+(Note that in this repository, **the X-ray FSOD dataset is named RFS**). Place the dataset under `~/FSOD` to match the default path used by the code. If you store it elsewhere, update `fsdet/data/datasets/builtin.py` and `fsdet/data/datasets/meta_rfs.py` accordingly.
+(The default seed of X-ray FSOD that is used to report performance in research papers can be found in the folder: Xray FSOD/train/split. Download link: sign the <a href="./Commitment.pdf">PDF</a> file and send it to cvresearcher@163.com. After receiving your request, we will reply with the link.)
 
 
 ## Code Structure
@@ -119,4 +123,18 @@ Where `WEIGHTS_PATH` points to the model parameters generated from the training 
 
 Or you can specify `TEST.EVAL_PERIOD` in the configuation yml to evaluate during training. 
 
-The whole procedure can be seen in run_rfs.sh and run_voc.sh
+The whole procedure can be seen in `run_rfs.sh` and `run_voc.sh`.
+If you only want to train with the FSOD dataset, run `bash run_rfs.sh` or use any
+configuration under `configs/RFS`. The VOC dataset and script are not required
+in this case. For a quick single experiment you can also execute
+`scripts/train_fsod.sh`, which performs base training, weight initialization and
+fine-tuning for a given split and shot. The script accepts optional arguments for
+the output directory and the number of iterations:
+
+```bash
+# Train split 1 with 10 shots, writing checkpoints under ./checkpoints/fsod
+# Limit the base and fine-tuning stages to 2 epochs (approximately)
+bash scripts/train_fsod.sh 1 10 ./checkpoints/fsod 2800 1000
+```
+The last two numbers override `SOLVER.MAX_ITER` for stage 1 and stage 2
+respectively. Adjust them as needed to run only a few epochs.

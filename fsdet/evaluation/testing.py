@@ -3,7 +3,11 @@ import logging
 import numpy as np
 import pprint
 import sys
-from collections import Mapping, OrderedDict
+try:
+    from collections.abc import Mapping
+except ImportError:  # Python<3.3
+    from collections import Mapping  # type: ignore
+from collections import OrderedDict
 
 
 def print_csv_format(results):
