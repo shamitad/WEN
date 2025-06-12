@@ -130,6 +130,8 @@ def setup(args):
     cfg = get_cfg()
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts or [])
+    if args.show_config:
+        print("Merged config:\n" + cfg.dump())
     cfg.freeze()
     set_global_cfg(cfg)
     default_setup(cfg, args)

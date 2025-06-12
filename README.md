@@ -65,8 +65,8 @@ The code structure follows Detectron2 v0.1.* and fsdet.
   - **structures**: Data types, such as bounding boxes and image lists.
   - **utils**: Utility functions.
 - **tools**
-  - **train_net.py**: Training script.
-  - **test_net.py**: Testing script.
+  - **train_net.py**: Training script. Use `--show-config` to print the final configuration.
+  - **test_net.py**: Testing script. Also supports `--show-config`.
   - **ckpt_surgery.py**: Surgery on checkpoints.
   - **run_experiments.py**: Running experiments across many seeds.
   - **aggregate_seeds.py**: Aggregating results from many seeds.
@@ -138,3 +138,4 @@ bash scripts/train_fsod.sh 1 10 ./checkpoints/fsod 2800 1000 1
 ```
 The last two numbers override `SOLVER.MAX_ITER` for stage 1 and stage 2,
 while the final number selects how many GPUs to use. Adjust them as needed to run only a few epochs.
+Append `--show-config` to any of these commands if you want to print the merged configuration.

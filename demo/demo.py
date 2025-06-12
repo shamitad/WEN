@@ -22,6 +22,8 @@ def setup_cfg(args):
     cfg = get_cfg()
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts or [])
+    if args.show_config:
+        print("Merged config:\n" + cfg.dump())
     # Set score_threshold for builtin models
     cfg.MODEL.RETINANET.SCORE_THRESH_TEST = args.confidence_threshold
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = args.confidence_threshold
@@ -50,6 +52,7 @@ def get_parser():
         help="A file or directory to save output visualizations. "
         "If not given, will show output in an OpenCV window.",
     )
+    parser.add_argument("--show-config", action="store_true", help="print the final config and exit")
 
     parser.add_argument(
         "--confidence-threshold",
