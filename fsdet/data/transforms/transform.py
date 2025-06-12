@@ -6,6 +6,12 @@ import numpy as np
 from fvcore.transforms.transform import HFlipTransform, NoOpTransform, Transform
 from PIL import Image
 
+# PIL removed the LINEAR constant in favor of Resampling enums.
+try:  # Pillow>=10
+    _BILINEAR = Image.Resampling.BILINEAR
+except AttributeError:  # Pillow<10
+    _BILINEAR = Image.BILINEAR
+
 __all__ = ["ExtentTransform", "ResizeTransform"]
 
 
@@ -19,7 +25,7 @@ class ExtentTransform(Transform):
     See: https://pillow.readthedocs.io/en/latest/PIL.html#PIL.ImageTransform.ExtentTransform
     """
 
-    def __init__(self, src_rect, output_size, interp=Image.LINEAR, fill=0):
+    def __init__(self, src_rect, output_size, interp=_BILINEAR, fill=0):
         """
         Args:
             src_rect (x0, y0, x1, y1): src coordinates

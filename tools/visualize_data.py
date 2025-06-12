@@ -18,7 +18,9 @@ def setup(args):
     cfg = get_cfg()
     if args.config_file:
         cfg.merge_from_file(args.config_file)
-    cfg.merge_from_list(args.opts)
+    cfg.merge_from_list(args.opts or [])
+    if args.show_config:
+        print("Merged config:\n" + cfg.dump())
     cfg.freeze()
     return cfg
 
@@ -34,6 +36,7 @@ def parse_args(in_args=None):
     parser.add_argument("--config-file", default="", metavar="FILE", help="path to config file")
     parser.add_argument("--output-dir", default="./", help="path to output directory")
     parser.add_argument("--show", action="store_true", help="show output in a window")
+    parser.add_argument("--show-config", action="store_true", help="print the final config and exit")
     parser.add_argument(
         "--opts",
         help="Modify config options using the command-line",

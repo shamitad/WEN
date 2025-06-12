@@ -20,10 +20,20 @@ To add new dataset, refer to the tutorial "docs/DATASETS.md".
 import os
 
 from fsdet.data import MetadataCatalog
-from .register_coco import register_coco_instances
-from .meta_coco import register_meta_coco
-from .lvis import register_lvis_instances
-from .meta_lvis import register_meta_lvis
+
+try:
+    from .register_coco import register_coco_instances
+    from .meta_coco import register_meta_coco
+except Exception:  # coco dataset is optional
+    register_coco_instances = None  # type: ignore
+    register_meta_coco = None  # type: ignore
+
+try:
+    from .lvis import register_lvis_instances
+    from .meta_lvis import register_meta_lvis
+except Exception:  # lvis dataset is optional
+    register_lvis_instances = None  # type: ignore
+    register_meta_lvis = None  # type: ignore
 from .pascal_voc import register_pascal_voc
 from .meta_pascal_voc import register_meta_pascal_voc
 from .rfs import register_rfs
@@ -52,6 +62,8 @@ _PREDEFINED_SPLITS_COCO["coco"] = {
 
 
 def register_all_coco(root="datasets"):
+    if register_coco_instances is None:
+        return
     for dataset_name, splits_per_dataset in _PREDEFINED_SPLITS_COCO.items():
         for key, (image_root, json_file) in splits_per_dataset.items():
             # Assume pre-defined datasets live in `./datasets`.
@@ -104,6 +116,8 @@ _PREDEFINED_SPLITS_LVIS = {
 
 
 def register_all_lvis(root="datasets"):
+    if register_lvis_instances is None:
+        return
     for dataset_name, splits_per_dataset in _PREDEFINED_SPLITS_LVIS.items():
         for key, (image_root, json_file) in splits_per_dataset.items():
             # Assume pre-defined datasets live in `./datasets`.
@@ -230,7 +244,7 @@ def register_all_pascal_voc(root="/media/datasets/PascalVOC_outline/VOCdevkit"):
         MetadataCatalog.get(name).evaluator_type = "pascal_voc"
 
 
-def register_all_rfs(root="/media/datasets/RFS"):
+def register_all_rfs(root=os.path.expanduser("~/FSOD")):
     SPLITS = [
         ("rfs_trainval", "train", "trainval"),
         ("rfs_test", "test", "test"),
@@ -313,7 +327,19 @@ def register_all_rfs(root="/media/datasets/RFS"):
         MetadataCatalog.get(name).evaluator_type = "rfs"
 
 # Register them all under "./datasets"
-register_all_coco()
-register_all_lvis()
-register_all_pascal_voc()
-register_all_rfs()
+if register_coco_instances is not None:
+    register_all_coco()
+if register_lvis_instances is not None:
+    register_all_lvis()
+
+PASVOC_ROOT = "/media/datasets/PascalVOC_outline/VOCdevkit"
+try:
+    from pathlib import Path
+    if Path(PASVOC_ROOT).exists():
+        register_all_pascal_voc(PASVOC_ROOT)
+except Exception:
+    pass
+
+RFS_ROOT = os.path.expanduser("~/FSOD")
+if os.path.isdir(RFS_ROOT):
+    register_all_rfs(RFS_ROOT)
