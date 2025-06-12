@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 # Simple training script for the FSOD dataset
-# Usage: bash scripts/train_fsod.sh [SPLIT] [SHOT] [OUTPUT_ROOT] [BASE_ITERS] [FINE_ITERS]
-# BASE_ITERS and FINE_ITERS optionally override SOLVER.MAX_ITER for the two stages
+# Usage: bash scripts/train_fsod.sh [SPLIT] [SHOT] [OUTPUT_ROOT] [BASE_ITERS] [FINE_ITERS] [NUM_GPUS]
+# BASE_ITERS and FINE_ITERS optionally override SOLVER.MAX_ITER for the two stages.
+# NUM_GPUS sets the number of GPUs used for training (default: 1).
 
 SPLIT=${1:-1}
 SHOT=${2:-10}
 OUTPUT_ROOT=${3:-./checkpoints/fsod}
 BASE_ITERS=${4:-0}
 FINE_ITERS=${5:-0}
+NUM_GPUS=${6:-1}
 
 FINE_EXTRA=""
 if [ "$FINE_ITERS" -gt 0 ]; then
@@ -20,7 +22,7 @@ if [ "$BASE_ITERS" -gt 0 ]; then
     BASE_EXTRA="SOLVER.MAX_ITER ${BASE_ITERS}"
 fi
 
-python tools/train_net.py --num-gpus 3 \
+python tools/train_net.py --num-gpus ${NUM_GPUS} \
     --config-file configs/RFS/base-training/R101_FPN_base_training_split${SPLIT}.yml \
     --opts OUTPUT_DIR ${OUTPUT_ROOT}/faster_rcnn_R_101_FPN_base${SPLIT} ${BASE_EXTRA}
 
@@ -31,7 +33,7 @@ python tools/ckpt_surgery.py \
     --save-dir ${OUTPUT_ROOT}/faster_rcnn_R_101_FPN_all${SPLIT}
 
 # Stage 2: fine-tune on novel data
-python tools/train_net.py --num-gpus 3 \
+python tools/train_net.py --num-gpus ${NUM_GPUS} \
     --config-file configs/RFS/split${SPLIT}/${SHOT}shot_GPB_PFB_proloss.yml \
     --opts MODEL.WEIGHTS ${OUTPUT_ROOT}/faster_rcnn_R_101_FPN_all${SPLIT}/model_surgery.pth \
            OUTPUT_DIR ${OUTPUT_ROOT}/split${SPLIT}_${SHOT}shot_GPB_PFB_proloss ${FINE_EXTRA}

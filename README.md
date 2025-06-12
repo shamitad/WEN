@@ -129,12 +129,12 @@ configuration under `configs/RFS`. The VOC dataset and script are not required
 in this case. For a quick single experiment you can also execute
 `scripts/train_fsod.sh`, which performs base training, weight initialization and
 fine-tuning for a given split and shot. The script accepts optional arguments for
-the output directory and the number of iterations:
+the output directory, the number of iterations, and the GPU count:
 
 ```bash
 # Train split 1 with 10 shots, writing checkpoints under ./checkpoints/fsod
 # Limit the base and fine-tuning stages to 2 epochs (approximately)
-bash scripts/train_fsod.sh 1 10 ./checkpoints/fsod 2800 1000
+bash scripts/train_fsod.sh 1 10 ./checkpoints/fsod 2800 1000 1
 ```
-The last two numbers override `SOLVER.MAX_ITER` for stage 1 and stage 2
-respectively. Adjust them as needed to run only a few epochs.
+The last two numbers override `SOLVER.MAX_ITER` for stage 1 and stage 2,
+while the final number selects how many GPUs to use. Adjust them as needed to run only a few epochs.
