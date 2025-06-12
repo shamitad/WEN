@@ -129,7 +129,7 @@ def setup(args):
     """
     cfg = get_cfg()
     cfg.merge_from_file(args.config_file)
-    cfg.merge_from_list(args.opts)
+    cfg.merge_from_list(args.opts or [])
     cfg.freeze()
     set_global_cfg(cfg)
     default_setup(cfg, args)
