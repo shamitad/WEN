@@ -331,5 +331,15 @@ if register_coco_instances is not None:
     register_all_coco()
 if register_lvis_instances is not None:
     register_all_lvis()
-register_all_pascal_voc()
-register_all_rfs()
+
+PASVOC_ROOT = "/media/datasets/PascalVOC_outline/VOCdevkit"
+try:
+    from pathlib import Path
+    if Path(PASVOC_ROOT).exists():
+        register_all_pascal_voc(PASVOC_ROOT)
+except Exception:
+    pass
+
+RFS_ROOT = os.path.expanduser("~/FSOD")
+if os.path.isdir(RFS_ROOT):
+    register_all_rfs(RFS_ROOT)
