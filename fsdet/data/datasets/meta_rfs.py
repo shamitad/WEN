@@ -9,6 +9,9 @@ import cv2
 from fsdet.structures import BoxMode
 from fsdet.data import DatasetCatalog, MetadataCatalog
 
+# Default location of the X-ray FSOD dataset
+RFS_ROOT = os.path.expanduser("~/FSOD")
+
 
 __all__ = ["register_meta_rfs"]
 
@@ -148,7 +151,7 @@ def load_filtered_rfs_instances(
     is_shots = "shot" in name
     if is_shots:
         fileids = {}
-        split_dir = os.path.join("/media/datasets/RFS/train", "split")
+        split_dir = os.path.join(RFS_ROOT, "train", "split")
 
         if use_more_base:
             ploidy = name.split('_')[-1]
@@ -191,7 +194,7 @@ def load_filtered_rfs_instances(
             dicts_ = []
             for fileid in fileids_:
                 #year = "2012" if "_" in fileid else "2007"
-                dirname = os.path.join("/media/datasets/RFS/train")
+                dirname = os.path.join(RFS_ROOT, "train")
                 anno_file = os.path.join(dirname, "annotations", fileid + ".txt")
                 jpeg_file = os.path.join(dirname, "images", fileid + ".jpg")
 

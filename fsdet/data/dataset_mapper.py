@@ -5,7 +5,10 @@ import numpy as np
 import torch
 
 import json
-import albumentations as A
+try:
+    import albumentations as A  # optional dependency
+except ImportError:  # pragma: no cover - albumentations is not required unless used
+    A = None
 from fsdet.structures import BoxMode
 
 from . import detection_utils as utils
@@ -114,6 +117,11 @@ class DatasetMapper:
 class AlbumentationMapper:
     debug_count = 5
     def __init__(self, cfg, is_train=True):
+        if A is None:
+            raise ImportError(
+                "Albumentations is required for AlbumentationMapper."
+                " Install it via `pip install albumentations`."
+            )
         # use the detectron2 crop_gen
         if cfg.INPUT.CROP.ENABLED and is_train:
             self.crop_gen = T.RandomCrop(cfg.INPUT.CROP.TYPE, cfg.INPUT.CROP.SIZE)
