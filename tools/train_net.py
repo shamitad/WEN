@@ -28,13 +28,7 @@ from fsdet.engine import (
     default_setup,
     launch,
 )
-from fsdet.evaluation import (
-    COCOEvaluator,
-    DatasetEvaluators,
-    LVISEvaluator,
-    PascalVOCDetectionEvaluator,
-    verify_results,
-)
+from fsdet.evaluation import DatasetEvaluators, verify_results
 
 # from fsdet.data.dataset_mapper import AlbumentationMapper
 
@@ -59,11 +53,17 @@ class Trainer(DefaultTrainer):
             output_folder = os.path.join(cfg.OUTPUT_DIR, "inference")
         evaluator_list = []
         evaluator_type = MetadataCatalog.get(dataset_name).evaluator_type
-        if evaluator_type == "coco":
+        # Import evaluators lazily so training can run without COCO/LVIS support
+        from fsdet.evaluation import (
+            COCOEvaluator,
+            PascalVOCDetectionEvaluator,
+            LVISEvaluator,
+        )
+        if evaluator_type == "coco" and COCOEvaluator is not None:
             evaluator_list.append(COCOEvaluator(dataset_name, cfg, True, output_folder))
         if evaluator_type == "pascal_voc":
             return PascalVOCDetectionEvaluator(dataset_name)
-        if evaluator_type == "lvis":
+        if evaluator_type == "lvis" and LVISEvaluator is not None:
             return LVISEvaluator(dataset_name, cfg, True, output_folder)
         if evaluator_type == "rfs":
             return RFSDetectionEvaluator(dataset_name)
@@ -90,7 +90,9 @@ def setup(args):
     """
     cfg = get_cfg()
     cfg.merge_from_file(args.config_file)
-    cfg.merge_from_list(args.opts)
+    cfg.merge_from_list(args.opts or [])
+    if args.show_config:
+        print("Merged config:\n" + cfg.dump())
     cfg.freeze()
     set_global_cfg(cfg)
     default_setup(cfg, args)

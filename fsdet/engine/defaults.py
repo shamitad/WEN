@@ -85,6 +85,11 @@ def default_argument_parser():
         default=0,
         help="the rank of this machine (unique per machine)",
     )
+    parser.add_argument(
+        "--show-config",
+        action="store_true",
+        help="print the final configuration and exit",
+    )
 
     # PyTorch still may leave orphan processes in multi-gpu training.
     # Therefore we use a deterministic way to obtain port,
